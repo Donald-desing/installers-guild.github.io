@@ -9,20 +9,24 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE20: true  # Force usage of Node.js 20
 
     steps:
     - uses: actions/checkout@v4
     
+    - name: Check Docker Version
+      run: docker --version  # Check if Docker is installed and available
+    
     - name: Build the site in the jekyll/builder container
       run: |
+        echo "Building Jekyll site..."
         docker run \
-        -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/_site:/srv/jekyll/_site \
-        jekyll/builder:latest /bin/bash -c "chmod -R 777 /srv/jekyll && jekyll build --future"
+          -v ${{ github.workspace }}:/srv/jekyll \
+          jekyll/builder:latest /bin/bash -c "chmod -R 777 /srv/jekyll && jekyll build --future"
 
-    - name: List branches
-      run: git branch -a
+    - name: List Files in Directory
+      run: |
+        echo "Listing files in the current directory:"
+        ls -la ${{ github.workspace }}
 
     - name: Deploy to GitHub Pages
       if: ${{ github.ref == 'refs/heads/main' }}
@@ -30,6 +34,5 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_branch: gh-pages
-        publish_dir: ./_site
         force_orphan: true
-        allow_empty_commit: true
+        publish_dir: ./_site
