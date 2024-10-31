@@ -1,0 +1,5 @@
+title: Installers Guild
+description: A platform connecting clients with installers.
+baseurl: "" # the subpath of your site, e.g., /blog
+url: "https://installers-guild.github.io" # your site's URL
+theme: minima # change this to your desired theme
