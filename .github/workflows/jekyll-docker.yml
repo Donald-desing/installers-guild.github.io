@@ -1,60 +1,53 @@
-name: Jekyll site CI
+name: Deploy Jekyll site to Pages
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: [ "main" ]  # Triggers the workflow on pushes to the 'main' branch
+  workflow_dispatch:  # Allows manual triggering from the Actions tab
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3  # Updated to v3
+      - name: Checkout
+        uses: actions/checkout@v3  # Use the latest version of checkout
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1  # Use the latest stable version of ruby/setup-ruby
         with:
-          ruby-version: 2.7 # Use your required Ruby version
+          ruby-version: '3.1'  # Ensure this matches your Ruby version in Gemfile
+          bundler-cache: true  # Caches installed gems
+          cache-version: 0  # Increment this number if you need to re-download cached gems
 
-      - name: Cache gems
-        uses: actions/cache@v3  # Updated to v3
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-gems-
-
-      - name: Install Dependencies
+      - name: Build with Jekyll
         run: |
           gem install bundler
           bundle install
-
-      - name: Clean up _site directory
-        run: rm -rf _site
-
-      - name: Build Jekyll site
+          bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
         env:
           JEKYLL_ENV: production
-        run: bundle exec jekyll build
 
-      - name: Debugging Output
-        run: |
-          echo "Ruby version:"
-          ruby -v
-          echo "Bundler version:"
-          bundler -v
-          echo "Installed Gems:"
-          bundle list
-          echo "Site directory content after build:"
-          ls -la _site
-
-      - name: Deploy to GitHub Pages
-        if: ${{ github.ref == 'refs/heads/main' }}
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1  # Use the latest version of upload-pages-artifact
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: _site
+          path: ./_site  # Path to the Jekyll build output
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}  # URL of the deployed site
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1  # Use the latest version of deploy-pages
