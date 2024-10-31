@@ -12,17 +12,25 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2 # Use v2 for better compatibility
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '23.1.0'  # Update to the latest version
 
       - name: Setup Ruby and Jekyll
         run: |
           gem install bundler
           bundle install
-          bundle exec jekyll build
+
+      - name: Build the site with Jekyll
+        run: |
+          bundle exec jekyll build || echo "Jekyll build failed" && exit 1
 
       - name: Deploy to GitHub Pages
         if: ${{ github.ref == 'refs/heads/main' }}
-        uses: peaceiris/actions-gh-pages@v4 # Update to the latest version
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
