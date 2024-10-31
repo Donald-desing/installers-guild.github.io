@@ -1,0 +1,66 @@
+/* How It Works Page Styling */
+.how-it-works {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.how-it-works h1 {
+  font-size: 2.5em;
+  margin-bottom: 1em;
+  color: #333;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
+}
+
+.step {
+  position: relative;
+  margin: 2em 0;
+  padding: 1.5em;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  opacity: 0; /* Start hidden for fade-in effect */
+  transform: translateY(20px); /* Slight upward motion on load */
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.step.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.icon {
+  font-size: 2.5em;
+  color: #007acc;
+  margin-bottom: 0.5em;
+}
+
+.step h2 {
+  font-size: 1.5em;
+  color: #333;
+}
+
+.step p {
+  font-size: 1em;
+  color: #666;
+}
+
+.cta .button {
+  display: inline-block;
+  padding: 0.75em 1.5em;
+  font-size: 1.2em;
+  background-color: #007acc;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.cta .button:hover {
+  background-color: #005f99;
+}
