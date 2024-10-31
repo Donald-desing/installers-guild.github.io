@@ -12,12 +12,20 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2  # Use v2 for better compatibility
+        uses: actions/checkout@v2
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7  # Specify the Ruby version you need
+          ruby-version: 2.7 # Specify your required Ruby version
+
+      - name: Cache gems
+        uses: actions/cache@v2
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
 
       - name: Install Dependencies
         run: |
@@ -25,11 +33,13 @@ jobs:
           bundle install
 
       - name: Build Jekyll site
+        env:
+          JEKYLL_ENV: production # Set Jekyll environment to production
         run: bundle exec jekyll build
 
       - name: Deploy to GitHub Pages
         if: ${{ github.ref == 'refs/heads/main' }}
-        uses: peaceiris/actions-gh-pages@v4  # Update to the latest version
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
