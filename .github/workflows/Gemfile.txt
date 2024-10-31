@@ -1,0 +1,4 @@
+source 'https://rubygems.org'
+
+gem 'jekyll', '~> 4.2'  # You can specify a specific version if needed
+gem 'jekyll-remote-theme' # If you are using remote themes
