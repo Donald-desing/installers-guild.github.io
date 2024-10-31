@@ -11,37 +11,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+    
+    - name: Check Docker Version
+      run: docker --version  # Check if Docker is installed and available
+    
+    - name: Build the site in the jekyll/builder container
+      run: |
+        echo "Building Jekyll site..."
+        docker run \
+          -v ${{ github.workspace }}:/srv/jekyll \
+          jekyll/builder:latest /bin/bash -c "chmod -R 777 /srv/jekyll && jekyll build --future"
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 2.7 # Specify your required Ruby version
+    - name: List Files in Directory
+      run: |
+        echo "Listing files in the current directory:"
+        ls -la ${{ github.workspace }}
 
-      - name: Cache gems
-        uses: actions/cache@v2
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-gems-
-
-      - name: Install Dependencies
-        run: |
-          gem install bundler
-          bundle install
-
-      - name: Build Jekyll site
-        env:
-          JEKYLL_ENV: production # Set Jekyll environment to production
-        run: bundle exec jekyll build
-
-      - name: Deploy to GitHub Pages
-        if: ${{ github.ref == 'refs/heads/main' }}
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          force_orphan: true
-          publish_dir: ./_site
+    - name: Deploy to GitHub Pages
+      if: ${{ github.ref == 'refs/heads/main' }}
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_branch: gh-pages
+        force_orphan: true
+        publish_dir: ./_site
