@@ -2,3 +2,11 @@ source 'https://rubygems.org'
 
 gem 'jekyll', '~> 4.2'  # You can specify a specific version if needed
 gem 'jekyll-remote-theme' # If you are using remote themes
+source 'https://rubygems.org' # This is the default source
+
+# If you have a private gem registry, add it here:
+source 'https://your-private-gem-registry.com' do
+  gem 'REGISTRY_TOKEN'
+end
+
+gem "jekyll", "~> 4.2"
