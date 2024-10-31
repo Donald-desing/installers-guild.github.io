@@ -12,7 +12,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3  # Updated to v3
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -20,7 +20,7 @@ jobs:
           ruby-version: 2.7 # Use your required Ruby version
 
       - name: Cache gems
-        uses: actions/cache@v2
+        uses: actions/cache@v3  # Updated to v3
         with:
           path: vendor/bundle
           key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
